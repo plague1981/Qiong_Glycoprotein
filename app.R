@@ -26,12 +26,6 @@ ui <-dashboardPage(
   )
 ) 
 
-
-
-setwd('C:/Users/Changyi.Lin/Documents/Rprojects/Qiong/O-glycopeptide_3/Results')
-p2_files<-list.files(getwd(),pattern = "p2_table.xlsx$")
-data.frame(intersect(unlist(read_excel(p2_files[1],sheet = 1, col_names = FALSE)[1]), unlist(read_excel(p2_files[2],sheet = 1, col_names = FALSE)[1])))
-
 server <- function(input, output) {
   # Condition
   list1<- eventReactive(input$submit_DE2_files,{ 
