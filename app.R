@@ -14,12 +14,15 @@ ui <-dashboardPage(
     box(tableOutput(outputId = 'list2')),
     box(tableOutput(outputId = 'cross.list')),
     box(
-      # upload DE2 files
-      fileInput(inputId = 'protein_DE2_file1',label = 'File1', multiple = FALSE),
-      fileInput(inputId = 'protein_DE2_file2',label = 'File2', multiple = FALSE),
-      tags$hr(),
       # name the venn plot
       textInput('DE2_name', 'Please name the plot', value = 'Venn diagram'),
+      tags$hr(),
+      # upload DE2 files
+      fileInput(inputId = 'protein_DE2_file1',label = 'File1', multiple = FALSE),
+      textInput(inputId = 'protein_DE2_file1_name', 'Name of File1', value = 'File1'),
+      tags$hr(),
+      fileInput(inputId = 'protein_DE2_file2',label = 'File2', multiple = FALSE),
+      textInput(inputId = 'protein_DE2_file2_name', 'Name of File2', value = 'File2'),
       # submit button for uploading DE2 files
       actionButton(inputId = "submit_DE2_files", label = "Submit")
     )
@@ -44,8 +47,20 @@ server <- function(input, output) {
     colnames(plist)<-'Cross'
     return(plist)
   })
-  
+  # Draw Venn diagram
+  VD<- eventReactive(input$submit_DE2_files,{ 
+    VDiagram  <- venn.diagram(
+      x<-list(A=unlist(list1()),B=unlist(list2())),
+      category.names = c(input$protein_DE2_file1_name,input$protein_DE2_file2_name),
+      fill=rainbow(length(x)),
+      filename = NULL, main = input$DE2_name)
+    grid.newpage()
+    return(grid.draw(VDiagram))
+  })
   # Display
+  output$venndiagram <- renderPlot({
+    VD()
+  })
   output$list1<-renderTable({
     list1()
   })
@@ -55,24 +70,7 @@ server <- function(input, output) {
   output$cross.list<-renderTable({
     cross.list()
   })
-  output$venndiagram <- renderImage({
-    # A temp file to save the output. It will be deleted after renderImage
-    # sends it, because deleteFile=TRUE.
-    outfile <- tempfile(fileext='.png')
-    # Generate a png
-    png(outfile, width=400, height=400)
-    # Draw a venn diagram
-    draw.pairwise.venn(area1 = nrow(list1()),
-                       area2 = nrow(list2()), 
-                       cross.area = nrow(cross.list()), 
-                       category = c("Dog People", "Cat People"))
-    dev.off()
-    # Return a list
-    list(src = outfile,
-         alt = "This is alternate text")
-  }, deleteFile = TRUE)
-  
-}
 
+}
 
 shinyApp(ui, server)
