@@ -13,73 +13,169 @@ ui <-dashboardPage(
   
   dashboardSidebar(  
     sidebarMenu(
+      menuItem('Data analyze', tabName = 'data_analyze', icon = icon('file')),
       menuItem("Venn diagram 2", tabName = "venndiagram2", icon = icon("dashboard")),
       menuItem("Venn diagram 3", tabName = "venndiagram3", icon = icon("dashboard"))
     )
     
   ),
   dashboardBody(
+    # data_analyze
     tabItems(
+      tabItem(tabName = 'data_analyze',
+              navbarPage(title = 'Data analyze',
+                tabPanel('Input files', icon = icon('file'),
+                         box(width = 3,
+                           textInput(inputId = 'group1','Please enter 1st group name:', 'Group1'),
+                           fileInput(inputId = 'group1files',label = 'Group1 name', multiple = TRUE),
+                           tags$hr(),
+                           textInput(inputId = 'group2','Please enter 2nd group name:', 'Group2'),
+                           fileInput(inputId = 'group2files',label = 'Group1 name', multiple = TRUE),
+                           tags$hr(),
+                           textInput(inputId = 'group3','Please enter 3rd group name:', 'Group3'),
+                           fileInput(inputId = 'group3files',label = 'Group3 name', multiple = TRUE)
+                         ),
+                         box(width = 3,
+                           textInput(inputId = 'group4','Please enter 4th group name:', 'Group4'),
+                           fileInput(inputId = 'group4files',label = 'Group4 name', multiple = TRUE),
+                           tags$hr(),
+                           textInput(inputId = 'group5','Please enter 5th group name:', 'Group5'),
+                           fileInput(inputId = 'group5files',label = 'Group5 name', multiple = TRUE),
+                           tags$hr(),
+                           textInput(inputId = 'group6','Please enter 6th group name:', 'Group6'),
+                           fileInput(inputId = 'group6files',label = 'Group6 name', multiple = TRUE)                           
+                         ),
+                         box(width = 3,
+                           textOutput('group1name'),
+                           tableOutput('group1filesinfo'),
+                           tags$hr(),
+                           textOutput('group2name'),
+                           tableOutput('group2filesinfo'),
+                           tags$hr(),
+                           textOutput('group3name'),
+                           tableOutput('group3filesinfo')
+                         ),
+                         box(width = 3,
+                           textOutput('group4name'),
+                           tableOutput('group4filesinfo'),
+                           tags$hr(),
+                           textOutput('group5name'),
+                           tableOutput('group5filesinfo'),
+                           tags$hr(),
+                           textOutput('group6name'),
+                           tableOutput('group6filesinfo')                           
+                         )
+                )
+              )
+      ),
+      # venndiagram2
       tabItem(tabName = "venndiagram2",
               navbarPage(title = "Venn diagram 2", 
                          tabPanel("Plot", icon = icon("bar-chart-o"),
-                             box(width = 6,
-                                  plotOutput(outputId = 'venndiagram2'),
-                                  downloadLink("downloadDE2", "Download xlsx file"),
-                             ),
-                             box(width = 6,
-                              # name the venn plot
-                                  textInput('DE2_name', 'Please name the plot', value = 'Venn diagram 2'),
-                                  tags$hr(),
-                                  # upload DE2 files
-                                  fileInput(inputId = 'protein_DE2_file1',label = 'File1', multiple = FALSE),
-                                  textInput(inputId = 'protein_DE2_file1_name', 'Name of File1 (Optional)', value = 'File1'),
-                                  tags$hr(),
-                                  fileInput(inputId = 'protein_DE2_file2',label = 'File2', multiple = FALSE),
-                                  textInput(inputId = 'protein_DE2_file2_name', 'Name of File2 (Optional)', value = 'File2'),
-                                  # submit button for uploading DE2 files
-                                  actionButton(inputId = "submit_DE2_files", label = "Submit")
-                             )                             
-                          ),
+                                  box(width = 6,
+                                      plotOutput(outputId = 'venndiagram2'),
+                                      downloadLink("downloadDE2", "Download xlsx file"),
+                                  ),
+                                  box(width = 6,
+                                      # name the venn plot
+                                      textInput('DE2_name', 'Please name the plot', value = 'Venn diagram 2'),
+                                      tags$hr(),
+                                      # upload DE2 files
+                                      fileInput(inputId = 'protein_DE2_file1',label = 'File1', multiple = FALSE),
+                                      textInput(inputId = 'protein_DE2_file1_name', 'Name of File1 (Optional)', value = 'File1'),
+                                      tags$hr(),
+                                      fileInput(inputId = 'protein_DE2_file2',label = 'File2', multiple = FALSE),
+                                      textInput(inputId = 'protein_DE2_file2_name', 'Name of File2 (Optional)', value = 'File2'),
+                                      # submit button for uploading DE2 files
+                                      actionButton(inputId = "submit_DE2_files", label = "Submit")
+                                  )                             
+                         ),
                          tabPanel("Summary", icon = icon("list-alt")),
                          tabPanel("Table", icon = icon("table"),
-                                  tableOutput(outputId = 'test2')
+                                  box(width = 12,
+                                      tableOutput(outputId = 'DE2.table')
                                   )
+                                  
+                         )
               ),
       ),
+      # venndiagram3
       tabItem(tabName = "venndiagram3",
               navbarPage("Venn diagram 3",
                          tabPanel("Plot", icon = icon("bar-chart-o"),
-                             box(
-                                plotOutput(outputId = 'venndiagram3'),
-                                downloadLink("downloadDE3", "Download xlsx file")
-                             ),
-                             box(
-                                # name the venn plot
-                                textInput('DE3_name', 'Please name the plot', value = 'Venn diagram 3'),
-                                tags$hr(),
-                                # upload DE3 files
-                                fileInput(inputId = 'protein_DE3_file1',label = 'File1', multiple = FALSE),
-                                textInput(inputId = 'protein_DE3_file1_name', 'Name of File1 (Optional)', value = 'File1'),
-                                tags$hr(),
-                                fileInput(inputId = 'protein_DE3_file2',label = 'File2', multiple = FALSE),
-                                textInput(inputId = 'protein_DE3_file2_name', 'Name of File2 (Optional)', value = 'File2'),
-                                tags$hr(),
-                                fileInput(inputId = 'protein_DE3_file3',label = 'File3', multiple = FALSE),
-                                textInput(inputId = 'protein_DE3_file3_name', 'Name of File3 (Optional)', value = 'File3'),
-                                # submit button for uploading DE3 files
-                                actionButton(inputId = "submit_DE3_files", label = "Submit")
-                             )     
+                                  box(
+                                    plotOutput(outputId = 'venndiagram3'),
+                                    downloadLink("downloadDE3", "Download xlsx file")
+                                  ),
+                                  box(
+                                    # name the venn plot
+                                    textInput('DE3_name', 'Please name the plot', value = 'Venn diagram 3'),
+                                    tags$hr(),
+                                    # upload DE3 files
+                                    fileInput(inputId = 'protein_DE3_file1',label = 'File1', multiple = FALSE),
+                                    textInput(inputId = 'protein_DE3_file1_name', 'Name of File1 (Optional)', value = 'File1'),
+                                    tags$hr(),
+                                    fileInput(inputId = 'protein_DE3_file2',label = 'File2', multiple = FALSE),
+                                    textInput(inputId = 'protein_DE3_file2_name', 'Name of File2 (Optional)', value = 'File2'),
+                                    tags$hr(),
+                                    fileInput(inputId = 'protein_DE3_file3',label = 'File3', multiple = FALSE),
+                                    textInput(inputId = 'protein_DE3_file3_name', 'Name of File3 (Optional)', value = 'File3'),
+                                    # submit button for uploading DE3 files
+                                    actionButton(inputId = "submit_DE3_files", label = "Submit")
+                                  )     
                          ),
                          tabPanel("Summary", icon = icon("list-alt")),
-                         tabPanel("Table", icon = icon("table"))
+                         tabPanel("Table", icon = icon("table"),
+                                  box(width = 12,
+                                    tableOutput('DE3.table')
+                                  )
+                         )
               )
-      ), tableOutput('test')
+      )
     )
   )
 ) 
 
 server <- function(input, output) {
+  # files grouping
+  output$group1name<-renderText({
+    input$group1
+  })
+  output$group1filesinfo<-renderTable({
+    input$group1files[1]
+  })
+  output$group2name<-renderText({
+    input$group2
+  })
+  output$group2filesinfo<-renderTable({
+    input$group2files[1]
+  })
+  output$group3name<-renderText({
+    input$group3
+  })
+  output$group3filesinfo<-renderTable({
+    input$group3files[1]
+  })
+  output$group4name<-renderText({
+    input$group4
+  })
+  output$group4filesinfo<-renderTable({
+    input$group4files[1]
+  })
+  output$group5name<-renderText({
+    input$group5
+  })
+  output$group5filesinfo<-renderTable({
+    input$group5files[1]
+  })
+  output$group6name<-renderText({
+    input$group6
+  })
+  output$group6filesinfo<-renderTable({
+    input$group6files[1]
+  })
+  # files merging based on grouping
+  
   # =========================Venn2
   # Condition
   list1.DE2<- eventReactive(input$submit_DE2_files,{ 
@@ -130,10 +226,19 @@ server <- function(input, output) {
   output$cross<-renderTable({
     cross.list.DE2()
   })
-  output$test2<-renderTable({
-    df.list<-list(unlist(list1.only.DE2()),unlist(list2.only.DE2()), unlist(cross.list.DE2()))
-    DF<-t(ldply(df.list, rbind))
-    return(DF)
+  output$DE2.table<-renderTable({
+    df<-data.frame()
+    for (n in 1:nrow(list1.only.DE2())){
+      df[n,1]<-list1.only.DE2()[n,1]
+    }
+    for (n in 1:nrow(list2.only.DE2())){
+      df[n,2]<-list2.only.DE2()[n,1]
+    }
+    for (n in 1:nrow(cross.list.DE2())){
+      df[n,3]<-cross.list.DE2()[n,1]
+    }
+    colnames(df)<-c(input$protein_DE2_file1_name,input$protein_DE2_file2_name, 'Cross')
+    return(df)
   })
   output$venndiagram2 <- renderPlot({
     VD2()
@@ -220,6 +325,35 @@ server <- function(input, output) {
   output$venndiagram3 <- renderPlot({
     VD3()
   })
+  output$DE3.table<-renderTable({
+    df<-data.frame()
+    for (n in 1:nrow(list1.only.DE3())){
+      df[n,1]<-list1.only.DE3()[n,1]
+    }
+    for (n in 1:nrow(list2.only.DE3())){
+      df[n,2]<-list2.only.DE3()[n,1]
+    }
+    for (n in 1:nrow(list3.only.DE3())){
+      df[n,3]<-list3.only.DE3()[n,1]
+    }
+    for (n in 1:nrow(list1.list2.only.DE3())){
+      df[n,4]<-list1.list2.only.DE3()[n,1]
+    }
+    for (n in 1:nrow(list2.list3.only.DE3())){
+      df[n,5]<-list2.list3.only.DE3()[n,1]
+    }
+    for (n in 1:nrow(list1.list3.only.DE3())){
+      df[n,6]<-list1.list3.only.DE3()[n,1]
+    }
+    for (n in 1:nrow(cross.list.DE3())){
+      df[n,7]<-cross.list.DE3()[n,1]
+    }
+    colnames(df)<-c(input$protein_DE3_file1_name,input$protein_DE3_file2_name,input$protein_DE3_file3_name,
+                paste0(input$protein_DE3_file1_name,input$protein_DE3_file2_name),
+                paste0(input$protein_DE3_file2_name,input$protein_DE3_file3_name),
+                paste0(input$protein_DE3_file1_name,input$protein_DE3_file3_name), 'Cross')
+    return(df)
+  })
   output$downloadDE3 <- downloadHandler(
     filename = function() {
       paste0(input$protein_DE3_file1_name, input$protein_DE3_file2_name, input$protein_DE3_file3_name, ".DE3.xlsx")
@@ -247,9 +381,7 @@ server <- function(input, output) {
         write.xlsx(cross.list.DE3(), sheetName = 'Cross',file, append = TRUE)
       } 
     })
-  output$test<-renderTable({
-    
-  })
+
 }
 
 shinyApp(ui, server)
