@@ -14,8 +14,8 @@ ui <-dashboardPage(
   dashboardSidebar(  
     sidebarMenu(
       menuItem('Data analyze', tabName = 'data_analyze', icon = icon('file')),
-      menuItem("Venn diagram 2", tabName = "venndiagram2", icon = icon("dashboard")),
-      menuItem("Venn diagram 3", tabName = "venndiagram3", icon = icon("dashboard"))
+      menuItem("Venn diagram 2", tabName = "venndiagram2", icon = icon("pie-chart")),
+      menuItem("Venn diagram 3", tabName = "venndiagram3", icon = icon("pie-chart"))
     )
     
   ),
@@ -25,6 +25,7 @@ ui <-dashboardPage(
       tabItem(tabName = 'data_analyze',
               navbarPage(title = 'Data analyze',
                 tabPanel('Input files', icon = icon('file'),
+                         selectInput(inputId = 'filetype1', label = 'Please select input filetype:', choices = c('csv','xlsx')),
                          box(width = 3,
                            textInput(inputId = 'group1','Please enter 1st group name:', 'Group1'),
                            fileInput(inputId = 'group1files',label = 'Group1 name', multiple = TRUE),
@@ -65,6 +66,10 @@ ui <-dashboardPage(
                            textOutput('group6name'),
                            tableOutput('group6filesinfo')                           
                          )
+                
+                ),
+                tabPanel('Analysis', icon = icon('line-chart')
+                
                 )
               )
       ),
@@ -142,7 +147,7 @@ server <- function(input, output) {
     input$group1
   })
   output$group1filesinfo<-renderTable({
-    input$group1files[1]
+    input$group1files$name
   })
   output$group2name<-renderText({
     input$group2
@@ -175,7 +180,9 @@ server <- function(input, output) {
     input$group6files[1]
   })
   # files merging based on grouping
-  
+  source('merge_data.R', local = TRUE)
+
+  #merge.data(input$filetype1,input$group1files$datapath[1],input$group1files$datapath[2],input$group1files$datapath[3])
   # =========================Venn2
   # Condition
   list1.DE2<- eventReactive(input$submit_DE2_files,{ 
