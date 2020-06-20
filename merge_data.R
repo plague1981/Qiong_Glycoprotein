@@ -1,5 +1,5 @@
 merge.data<-function(filetype,file1,file2,file3){
-  if (input$filetype=='csv'){
+  if (filetype=='csv'){
     csv.file.table<-NULL
     for (f in c(file1,file2,file3)){
       csv.file.table$f<-data.frame(read.csv(file = f, stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
