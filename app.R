@@ -24,53 +24,56 @@ ui <-dashboardPage(
     tabItems(
       tabItem(tabName = 'data_analyze',
               navbarPage(title = 'Data analyze',
-                tabPanel('Input files', icon = icon('file'),
-                         selectInput(inputId = 'filetype1', label = 'Please select input filetype:', choices = c('csv','xlsx')),
-                         box(width = 3,
-                           textInput(inputId = 'group1','Please enter 1st group name:', 'Group1'),
-                           fileInput(inputId = 'group1files',label = 'Group1 name', multiple = TRUE),
-                           tags$hr(),
-                           textInput(inputId = 'group2','Please enter 2nd group name:', 'Group2'),
-                           fileInput(inputId = 'group2files',label = 'Group1 name', multiple = TRUE),
-                           tags$hr(),
-                           textInput(inputId = 'group3','Please enter 3rd group name:', 'Group3'),
-                           fileInput(inputId = 'group3files',label = 'Group3 name', multiple = TRUE)
+                         tabPanel('Input files', icon = icon('file'),
+                                  selectInput(inputId = 'filetype1', label = 'Please select input filetype:', choices = c('csv','xlsx')),
+                                  box(width = 3,
+                                      textInput(inputId = 'group1','Please enter 1st group name:', 'Group1'),
+                                      fileInput(inputId = 'group1files',label = 'Group1 name', multiple = TRUE),
+                                      tags$hr(),
+                                      textInput(inputId = 'group2','Please enter 2nd group name:', 'Group2'),
+                                      fileInput(inputId = 'group2files',label = 'Group1 name', multiple = TRUE),
+                                      tags$hr(),
+                                      textInput(inputId = 'group3','Please enter 3rd group name:', 'Group3'),
+                                      fileInput(inputId = 'group3files',label = 'Group3 name', multiple = TRUE)
+                                  ),
+                                  box(width = 3,
+                                      textInput(inputId = 'group4','Please enter 4th group name:', 'Group4'),
+                                      fileInput(inputId = 'group4files',label = 'Group4 name', multiple = TRUE),
+                                      tags$hr(),
+                                      textInput(inputId = 'group5','Please enter 5th group name:', 'Group5'),
+                                      fileInput(inputId = 'group5files',label = 'Group5 name', multiple = TRUE),
+                                      tags$hr(),
+                                      textInput(inputId = 'group6','Please enter 6th group name:', 'Group6'),
+                                      fileInput(inputId = 'group6files',label = 'Group6 name', multiple = TRUE)                           
+                                  ),
+                                  box(width = 3,
+                                      textOutput('group1name'),
+                                      tableOutput('group1filesinfo'),
+                                      tags$hr(),
+                                      textOutput('group2name'),
+                                      tableOutput('group2filesinfo'),
+                                      tags$hr(),
+                                      textOutput('group3name'),
+                                      tableOutput('group3filesinfo')
+                                  ),
+                                  box(width = 3,
+                                      textOutput('group4name'),
+                                      tableOutput('group4filesinfo'),
+                                      tags$hr(),
+                                      textOutput('group5name'),
+                                      tableOutput('group5filesinfo'),
+                                      tags$hr(),
+                                      textOutput('group6name'),
+                                      tableOutput('group6filesinfo')                           
+                                  )
+                                  
                          ),
-                         box(width = 3,
-                           textInput(inputId = 'group4','Please enter 4th group name:', 'Group4'),
-                           fileInput(inputId = 'group4files',label = 'Group4 name', multiple = TRUE),
-                           tags$hr(),
-                           textInput(inputId = 'group5','Please enter 5th group name:', 'Group5'),
-                           fileInput(inputId = 'group5files',label = 'Group5 name', multiple = TRUE),
-                           tags$hr(),
-                           textInput(inputId = 'group6','Please enter 6th group name:', 'Group6'),
-                           fileInput(inputId = 'group6files',label = 'Group6 name', multiple = TRUE)                           
-                         ),
-                         box(width = 3,
-                           textOutput('group1name'),
-                           tableOutput('group1filesinfo'),
-                           tags$hr(),
-                           textOutput('group2name'),
-                           tableOutput('group2filesinfo'),
-                           tags$hr(),
-                           textOutput('group3name'),
-                           tableOutput('group3filesinfo')
-                         ),
-                         box(width = 3,
-                           textOutput('group4name'),
-                           tableOutput('group4filesinfo'),
-                           tags$hr(),
-                           textOutput('group5name'),
-                           tableOutput('group5filesinfo'),
-                           tags$hr(),
-                           textOutput('group6name'),
-                           tableOutput('group6filesinfo')                           
+                         tabPanel('Analysis', icon = icon('line-chart'),
+                                  box(width = 12,
+                                   tableOutput('group1') 
+                                  )
+                                  
                          )
-                
-                ),
-                tabPanel('Analysis', icon = icon('line-chart')
-                
-                )
               )
       ),
       # venndiagram2
@@ -132,7 +135,7 @@ ui <-dashboardPage(
                          tabPanel("Summary", icon = icon("list-alt")),
                          tabPanel("Table", icon = icon("table"),
                                   box(width = 12,
-                                    tableOutput('DE3.table')
+                                      tableOutput('DE3.table')
                                   )
                          )
               )
@@ -180,9 +183,14 @@ server <- function(input, output) {
     input$group6files[1]
   })
   # files merging based on grouping
-  source('merge_data.R', local = TRUE)
-
-  #merge.data(input$filetype1,input$group1files$datapath[1],input$group1files$datapath[2],input$group1files$datapath[3])
+  output$group1<- renderTable({
+    df1<-data.frame(read.csv(file = input$group1files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+    df2<-data.frame(read.csv(file = input$group1files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+    df3<-data.frame(read.csv(file = input$group1files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+    df<-rbind(df1,df2,df3)
+    return(df)
+  })
+  #
   # =========================Venn2
   # Condition
   list1.DE2<- eventReactive(input$submit_DE2_files,{ 
@@ -356,9 +364,9 @@ server <- function(input, output) {
       df[n,7]<-cross.list.DE3()[n,1]
     }
     colnames(df)<-c(input$protein_DE3_file1_name,input$protein_DE3_file2_name,input$protein_DE3_file3_name,
-                paste0(input$protein_DE3_file1_name,input$protein_DE3_file2_name),
-                paste0(input$protein_DE3_file2_name,input$protein_DE3_file3_name),
-                paste0(input$protein_DE3_file1_name,input$protein_DE3_file3_name), 'Cross')
+                    paste0(input$protein_DE3_file1_name,input$protein_DE3_file2_name),
+                    paste0(input$protein_DE3_file2_name,input$protein_DE3_file3_name),
+                    paste0(input$protein_DE3_file1_name,input$protein_DE3_file3_name), 'Cross')
     return(df)
   })
   output$downloadDE3 <- downloadHandler(
@@ -388,7 +396,7 @@ server <- function(input, output) {
         write.xlsx(cross.list.DE3(), sheetName = 'Cross',file, append = TRUE)
       } 
     })
-
+  
 }
 
 shinyApp(ui, server)
