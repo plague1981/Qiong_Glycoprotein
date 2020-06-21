@@ -1,10 +1,36 @@
-merge.data<-function(filetype,file1,file2,file3){
-  if (filetype=='csv'){
-    csv.file.table<-NULL
-    for (f in c(file1,file2,file3)){
-      csv.file.table$f<-data.frame(read.csv(file = f, stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
-    }
-    csv.file.merge.table<-rbind(csv.file.table$file1,csv.file.table$file2,csv.file.table$file3)
-    return(csv.file.merge.table)
-  }
-}
+group1_raw<- reactive({
+  df1<-data.frame(read.csv(file = input$group1files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df2<-data.frame(read.csv(file = input$group1files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df3<-data.frame(read.csv(file = input$group1files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df<-rbind(df1,df2,df3)
+})
+group2_raw<- reactive({
+  df1<-data.frame(read.csv(file = input$group2files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df2<-data.frame(read.csv(file = input$group2files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df3<-data.frame(read.csv(file = input$group2files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df<-rbind(df1,df2,df3)
+})
+group3_raw<- reactive({
+  df1<-data.frame(read.csv(file = input$group3files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df2<-data.frame(read.csv(file = input$group3files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df3<-data.frame(read.csv(file = input$group3files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df<-rbind(df1,df2,df3)
+})
+group4_raw<- reactive({
+  df1<-data.frame(read.csv(file = input$group4files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df2<-data.frame(read.csv(file = input$group4files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df3<-data.frame(read.csv(file = input$group4files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df<-rbind(df1,df2,df3)
+})
+group5_raw<- reactive({
+  df1<-data.frame(read.csv(file = input$group5files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df2<-data.frame(read.csv(file = input$group5files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df3<-data.frame(read.csv(file = input$group5files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df<-rbind(df1,df2,df3)
+})
+group6_raw<- reactive({
+  df1<-data.frame(read.csv(file = input$group6files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df2<-data.frame(read.csv(file = input$group6files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df3<-data.frame(read.csv(file = input$group6files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
+  df<-rbind(df1,df2,df3)
+})
