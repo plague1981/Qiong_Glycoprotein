@@ -69,8 +69,9 @@ ui <-dashboardPage(
                                   
                          ),
                          tabPanel('Analysis', icon = icon('line-chart'),
+                                  selectInput(inputId = 'rawdata', label = 'Please select a group:', choices = c('Group1','Group2','Group3','Group4','Group5','Group6')),
                                   box(width = 12,
-                                   tableOutput('group1') 
+                                   tableOutput('group_raw') 
                                   )
                                   
                          )
@@ -144,51 +145,36 @@ ui <-dashboardPage(
   )
 ) 
 
-server <- function(input, output) {
-  # files grouping
-  output$group1name<-renderText({
-    input$group1
+server <- function(input, output,session) {
+  # ================= Data anaylsis
+  # +++++++ file input
+  # file grouping
+  source('file_grouping.R', local = TRUE)
+
+  # +++++Analysis
+  # Update the selectInput rawdata
+  group_name_list<-reactive({
+    return(c(input$group1,input$group2,input$group3,input$group4,input$group5,input$group6))
   })
-  output$group1filesinfo<-renderTable({
-    input$group1files$name
-  })
-  output$group2name<-renderText({
-    input$group2
-  })
-  output$group2filesinfo<-renderTable({
-    input$group2files[1]
-  })
-  output$group3name<-renderText({
-    input$group3
-  })
-  output$group3filesinfo<-renderTable({
-    input$group3files[1]
-  })
-  output$group4name<-renderText({
-    input$group4
-  })
-  output$group4filesinfo<-renderTable({
-    input$group4files[1]
-  })
-  output$group5name<-renderText({
-    input$group5
-  })
-  output$group5filesinfo<-renderTable({
-    input$group5files[1]
-  })
-  output$group6name<-renderText({
-    input$group6
-  })
-  output$group6filesinfo<-renderTable({
-    input$group6files[1]
+  observe({
+    updateSelectInput(session, "rawdata", 
+                      choices = group_name_list())
   })
   # files merging based on grouping
-  output$group1<- renderTable({
-    df1<-data.frame(read.csv(file = input$group1files$datapath[1], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
-    df2<-data.frame(read.csv(file = input$group1files$datapath[2], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
-    df3<-data.frame(read.csv(file = input$group1files$datapath[3], stringsAsFactors = FALSE)[,c(1,2,8,7,20)])
-    df<-rbind(df1,df2,df3)
-    return(df)
+  source('merge_data.R',local = TRUE)
+  # view the merged data
+  datasetInput <- reactive({
+    switch(input$rawdata,
+           'Group1' = group1_raw(),
+           'Group2' = group2_raw(),
+           'Group3' = group3_raw(),
+           'Group4' = group4_raw(),
+           'Group5' = group5_raw(),
+           'Group6' = group6_raw(),
+           )
+  })
+  output$group_raw<-renderTable({
+    datasetInput()
   })
   #
   # =========================Venn2
@@ -398,5 +384,3 @@ server <- function(input, output) {
     })
   
 }
-
-shinyApp(ui, server)
