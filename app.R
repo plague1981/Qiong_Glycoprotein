@@ -25,7 +25,7 @@ ui <-dashboardPage(
       tabItem(tabName = 'data_analyze',
               navbarPage(title = 'Data analyze',
                          tabPanel('Input files', icon = icon('file'),
-                                  selectInput(inputId = 'filetype1', label = 'Please select input filetype:', choices = c('csv','xlsx')),
+                                  selectInput(inputId = 'filetype1', label = 'Please select input filetype:', choices = c('csv','xlsx'),selected = 'csv'),
                                   box(width = 3,
                                       textInput(inputId = 'group1','Please enter 1st group name:', 'Group1'),
                                       fileInput(inputId = 'group1files',label = 'Group1 name', multiple = TRUE),
@@ -69,9 +69,13 @@ ui <-dashboardPage(
                                   
                          ),
                          tabPanel('Analysis', icon = icon('line-chart'),
-                                  selectInput(inputId = 'rawdata', label = 'Please select a group:', choices = c('Group1','Group2','Group3','Group4','Group5','Group6')),
+                                  uiOutput('dataset'),
+                                  
                                   box(width = 12,
-                                   tableOutput('group_raw') 
+                                      tableOutput('group_raw') 
+                                  ),
+                                  box(
+                                      tableOutput('glycan.freq')
                                   )
                                   
                          )
@@ -83,7 +87,7 @@ ui <-dashboardPage(
                          tabPanel("Plot", icon = icon("bar-chart-o"),
                                   box(width = 6,
                                       plotOutput(outputId = 'venndiagram2'),
-                                      downloadLink("downloadDE2", "Download xlsx file"),
+                                      downloadLink("downloadDE2", "Download xlsx file")
                                   ),
                                   box(width = 6,
                                       # name the venn plot
@@ -106,7 +110,7 @@ ui <-dashboardPage(
                                   )
                                   
                          )
-              ),
+              )
       ),
       # venndiagram3
       tabItem(tabName = "venndiagram3",
@@ -149,34 +153,51 @@ server <- function(input, output,session) {
   # ================= Data anaylsis
   # +++++++ file input
   # file grouping
-  source('file_grouping.R', local = TRUE)
-
+  # files merging based on grouping
+  source('global.R', local = TRUE)
+  
   # +++++Analysis
   # Update the selectInput rawdata
-  group_name_list<-reactive({
-    return(c(input$group1,input$group2,input$group3,input$group4,input$group5,input$group6))
+  output$dataset<-renderUI({
+    group_name_list<-c(input$group1,input$group2,input$group3,input$group4,input$group5,input$group6)
+    selectInput(inputId = 'group', label = 'Please select group:', choices = group_name_list ,selected = group_name_list[1])
   })
-  observe({
-    updateSelectInput(session, "rawdata", 
-                      choices = group_name_list())
-  })
-  # files merging based on grouping
-  source('merge_data.R',local = TRUE)
+  
   # view the merged data
-  datasetInput <- reactive({
-    switch(input$rawdata,
-           'Group1' = group1_raw(),
-           'Group2' = group2_raw(),
-           'Group3' = group3_raw(),
-           'Group4' = group4_raw(),
-           'Group5' = group5_raw(),
-           'Group6' = group6_raw(),
-           )
+  output$group_raw<-renderTable(digits = 6,{
+    if (isTRUE(group1_raw())){
+      return (NULL)
+    } else if (input$group==input$group1){
+      return(group1_raw())
+    } else if (input$group==input$group2){
+      return(group2_raw())
+    } else if (input$group==input$group3){
+      return(group3_raw())
+    } else if (input$group==input$group4){
+      return(group4_raw())
+    } else if (input$group==input$group5){
+      return(group5_raw())
+    } else if (input$group==input$group6){
+      return(group6_raw())
+    }
   })
-  output$group_raw<-renderTable({
-    datasetInput()
+  # ====== Glycans Analysis
+  output$glycan.freq<-renderTable(digits = 6,{
+    if (input$group==input$group1){
+      return(glycan.freq.abundance(group1_raw()))
+    } else if (input$group==input$group2){
+      return(glycan.freq.abundance(group2_raw()))
+    } else if (input$group==input$group3){
+      return(glycan.freq.abundance(group3_raw()))
+    } else if (input$group==input$group4){
+      return(glycan.freq.abundance(group4_raw()))
+    } else if (input$group==input$group5){
+      return(glycan.freq.abundance(group5_raw()))
+    } else if (input$group==input$group6){
+      return(glycan.freq.abundance(group6_raw()))
+    }
   })
-  #
+      #
   # =========================Venn2
   # Condition
   list1.DE2<- eventReactive(input$submit_DE2_files,{ 
@@ -384,3 +405,5 @@ server <- function(input, output,session) {
     })
   
 }
+
+shinyApp(ui, server)
